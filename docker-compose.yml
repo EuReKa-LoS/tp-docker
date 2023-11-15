@@ -1,0 +1,43 @@
+version: '3.8'
+services:
+  db:
+    build:
+      context: ./sql
+      dockerfile: Dockerfile
+    container_name: db-beers
+    # NOTE: use of "mysql_native_password" is not recommended: https://dev.mysql.com/doc/refman/8.0/en/upgrading-from-previous-series.html#upgrade-caching-sha2-password
+    # (this is just an example, not intended to be a production configuration)
+    # command: --default-authentication-plugin=mysql_native_password
+#     restart: always
+    environment:
+# Nom de la base de donnée
+      MYSQL_DATABASE: beer
+# Mot de passe de la base de donnée utilisateur root
+      MYSQL_ROOT_PASSWORD: root
+
+# Copier le fichier `beer.sql` du dossier `sql` dans l'entrypoint du conteneur MySQL
+    # volumes:
+    #       - ./sql/beer.sql:/docker-entrypoint-initdb.d/beer.sql
+    # ports:
+    #   - '5000:3306'
+  # adminer:
+  #   image: adminer
+  #   restart: always
+  #   ports:
+  #     - 8080:8080
+
+# API Python
+  api:
+    container_name: api-beers
+    build:
+      context: ./api
+      dockerfile: Dockerfile
+    restart: always
+    ports:
+      - '81:5000'
+    depends_on:
+      - db
+
+
+# Example of docker-compose with services and dockerfile
+
